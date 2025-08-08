@@ -33,21 +33,21 @@ Application web dédiée aux médecins, permettant la gestion des dossiers patie
 ### 🔧 Technologies Clés
 
 **Backend:**
- -FastAPI
- -SQLAlchemy ORM
- -Pydantic (validation)
- -Passlib (hash)
+ - FastAPI
+ - SQLAlchemy ORM
+ - Pydantic (validation)
+ - Passlib (hash)
 
 **Frontend:**
- -Jinja2 Templates
- -HTML/CSS
+ - Jinja2 Templates
+ - HTML/CSS
 
 **Data:**
- -PostgreSQL
- -Pandas (prétraitement)
+ - PostgreSQL
+ - Pandas (prétraitement)
 
 **ML:**
- -Joblib (sérialisation)
+ - Joblib (sérialisation)
 
 ### 📊 Structure du projet
 
@@ -87,10 +87,13 @@ medical_app/
 
 ### 🔄 Fonctions Utilitaires
 
- -get_db()                      : Obtient une session de base de données
- -get_password_hash(password)   : Hash un mot de passe avec bcrypt
- -verify_password(plain, hashed):Vérifie un mot de passe contre son hash
- -predict_diabetes(patient_data):Prédit le diabète avec le modèle ML (retourne prédiction + confiance)
+  - get_db()                      : Obtient une session de base de données
+
+  - get_password_hash(password)   : Hash un mot de passe avec bcrypt
+
+  - verify_password(plain, hashed):Vérifie un mot de passe contre son hash
+
+  - predict_diabetes(patient_data):Prédit le diabète avec le modèle ML (retourne prédiction + confiance)
 
 ### 🔐 Routes d'Authentification (HTML)
 
@@ -113,11 +116,11 @@ medical_app/
 |POST	    |/delete/{id}|delete_patient()	  |Supprime un patient          |
 
 ### 🧩 Modèles Pydantic (schemas.py)
- -UserCreate : Validation création utilisateur
- -UserLogin : Validation connexion
- -PatientCreate : Validation données patient
+ - UserCreate : Validation création utilisateur
+ - UserLogin : Validation connexion
+ - PatientCreate : Validation données patient
 
 ### 🗃️ Modèles SQLAlchemy (database.py)
- -Medecin : Table médecins        -Champs : id, username, email, password
- -Patient : Table patients        -Champs : id, doctorid, name, age, sex, glucose, etc.
- -Prediction : Table prédictions  -Champs : id, patientid, result, confidence
+ - Medecin : Table médecins
+ - Patient : Table patients
+ - Prediction : Table prédictions
