@@ -85,39 +85,39 @@ medical_app/
 │   └── database.py        # Modèles SQLAlchemy
 
 
-🔄 Fonctions Utilitaires
+### 🔄 Fonctions Utilitaires
 
 -get_db()                      : Obtient une session de base de données
 -get_password_hash(password)   : Hash un mot de passe avec bcrypt
 -verify_password(plain, hashed):Vérifie un mot de passe contre son hash
 -predict_diabetes(patient_data):Prédit le diabète avec le modèle ML (retourne prédiction + confiance)
 
-🔐 Routes d'Authentification (HTML)
+### 🔐 Routes d'Authentification (HTML)
 
-|Méthode	|Route	    |Fonction	      |Description
-------------------------------------------------------------------------
-|GET	    |/login	    |login_page()	    |Affiche le formulaire de login
-|POST	    |/login	    |login_submit()	  |Traite la connexion
-|GET	    |/register	|register_page()  |Affiche l'inscription
-|POST	    |/register	|register_submit()|Traite l'inscription
-|GET	    |/logout	  |logout()	        |Déconnexion
+|Méthode	|Route	    |Fonction	        |Description                   |
+|---------|-----------|-----------------|------------------------------|
+|GET	    |/login	    |login_page()	    |Affiche le formulaire de login|
+|POST	    |/login	    |login_submit()	  |Traite la connexion           |
+|GET	    |/register	|register_page()  |Affiche l'inscription         |
+|POST	    |/register	|register_submit()|Traite l'inscription          |
+|GET	    |/logout	  |logout()	        |Déconnexion                   |
 
-🏠 Routes Principales (HTML)
+### 🏠 Routes Principales (HTML)
 
-|Méthode	|Route	     |Fonction	          |Description
-------------------------------------------------------------------------
-|GET	    |/	         |root()	            |Page d'accueil
-|GET	    |/add	       |add_patient_form()  |Formulaire d'ajout de patient
-|POST	    |/submit	   |submit_patient()	  |Traite l'ajout de patient
-|GET	    |/patients	 |patients_dashboard()|Liste des patients + stats
-|POST	    |/delete/{id}|delete_patient()	  |Supprime un patient
+|Méthode	|Route	     |Fonction	          |Description                  |
+|---------|---------------------------------|-----------------------------|
+|GET	    |/	         |root()	            |Page d'accueil               |
+|GET	    |/add	       |add_patient_form()  |Formulaire d'ajout de patient|
+|POST	    |/submit	   |submit_patient()	  |Traite l'ajout de patient    |
+|GET	    |/patients	 |patients_dashboard()|Liste des patients + stats   |
+|POST	    |/delete/{id}|delete_patient()	  |Supprime un patient          |
 
-🧩 Modèles Pydantic (schemas.py)
+### 🧩 Modèles Pydantic (schemas.py)
 -UserCreate : Validation création utilisateur
 -UserLogin : Validation connexion
 -PatientCreate : Validation données patient
 
-🗃️ Modèles SQLAlchemy (database.py)
+### 🗃️ Modèles SQLAlchemy (database.py)
 -Medecin : Table médecins        -Champs : id, username, email, password
 -Patient : Table patients        -Champs : id, doctorid, name, age, sex, glucose, etc.
 -Prediction : Table prédictions  -Champs : id, patientid, result, confidence
