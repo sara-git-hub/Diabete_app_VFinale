@@ -1,6 +1,6 @@
 # 🏥 API de Gestion Médicale - Prédiction de Diabète
 
-Une application complète pour les professionnels de santé permettant de gérer les patients et prédire les risques de diabète.
+Application web dédiée aux médecins, permettant la gestion des dossiers patients et la prédiction du risque de diabète grâce à un modèle de ML. Développée avec HTML/CSS pour le frontend, FastAPI en backend et PostgreSQL pour la BDD.
 
 ## ✨ Fonctionnalités
 
@@ -50,8 +50,9 @@ Une application complète pour les professionnels de santé permettant de gérer
 -Joblib (sérialisation)
 
 ### 📊 Structure du projet
-text
+
 medical_app/
+
 │
 ├── main.py                # Fichier principal de l'application
 
