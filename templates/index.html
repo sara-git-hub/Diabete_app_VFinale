@@ -1,0 +1,39 @@
+<!-- templates/index.html -->
+{% extends "base.html" %}
+
+{% block title %}Accueil - Gestion Médicale{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>🏥 Système de Gestion Médicale</h1>
+    <p>Bienvenue dans votre système de gestion des patients et de prédiction du diabète.</p>
+    
+    {% if request.session.get('doctor_id') %}
+        <h2>Bonjour, Dr. {{ request.session.get('username') }} !</h2>
+        <p>Que souhaitez-vous faire aujourd'hui ?</p>
+        
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <a href="/patients" class="btn">📋 Voir mes patients</a>
+            <a href="/add" class="btn">➕ Ajouter un patient</a>
+        </div>
+    {% else %}
+        <h2>Pour commencer</h2>
+        <p>Vous devez vous connecter ou créer un compte pour accéder au système.</p>
+        
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <a href="/login" class="btn">🔑 Se connecter</a>
+            <a href="/register" class="btn">📝 S'inscrire</a>
+        </div>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h3>📊 Fonctionnalités</h3>
+    <ul style="margin-top: 1rem; padding-left: 2rem;">
+        <li>Gestion des patients</li>
+        <li>Prédiction automatique du diabète</li>
+        <li>Historique des consultations</li>
+        <li>Statistiques personnalisées</li>
+    </ul>
+</div>
+{% endblock %}

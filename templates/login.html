@@ -1,0 +1,41 @@
+<!-- templates/login.html -->
+{% extends "base.html" %}
+
+{% block title %}Connexion - Gestion Médicale{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>🔑 Connexion</h1>
+    
+    {% if error %}
+        <div class="alert alert-danger">
+            ❌ {{ error }}
+        </div>
+    {% endif %}
+    
+    {% if success %}
+        <div class="alert alert-success">
+            ✅ {{ success }}
+        </div>
+    {% endif %}
+    
+    <form method="post" action="/login">
+        <div class="form-group">
+            <label for="username">Nom d'utilisateur:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Mot de passe:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        
+        <button type="submit" class="btn">Se connecter</button>
+    </form>
+    
+    <p style="margin-top: 2rem; text-align: center;">
+        Pas encore de compte ? 
+        <a href="/register" style="color: #007bff;">Créer un compte</a>
+    </p>
+</div>
+{% endblock %}

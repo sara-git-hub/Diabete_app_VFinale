@@ -1,0 +1,48 @@
+<!-- templates/register.html -->
+{% extends "base.html" %}
+
+{% block title %}Inscription - Gestion Médicale{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>📝 Créer un compte</h1>
+    
+    {% if error %}
+        <div class="alert alert-danger">
+            ❌ {{ error }}
+        </div>
+    {% endif %}
+    
+    {% if success %}
+        <div class="alert alert-success">
+            ✅ {{ success }}
+        </div>
+    {% endif %}
+    
+    <form method="post" action="/register">
+        <div class="form-group">
+            <label for="username">Nom d'utilisateur:</label>
+            <input type="text" id="username" name="username" required minlength="3">
+            <small style="color: #666;">Au moins 3 caractères</small>
+        </div>
+        
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Mot de passe:</label>
+            <input type="password" id="password" name="password" required minlength="6">
+            <small style="color: #666;">Au moins 6 caractères</small>
+        </div>
+        
+        <button type="submit" class="btn">Créer le compte</button>
+    </form>
+    
+    <p style="margin-top: 2rem; text-align: center;">
+        Déjà un compte ? 
+        <a href="/login" style="color: #007bff;">Se connecter</a>
+    </p>
+</div>
+{% endblock %}

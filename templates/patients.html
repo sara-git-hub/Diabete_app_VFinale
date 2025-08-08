@@ -1,0 +1,96 @@
+<!-- templates/patients.html -->
+{% extends "base.html" %}
+
+{% block title %}Mes Patients - Gestion Médicale{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1>📋 Mes Patients</h1>
+    <a href="/add" class="btn">➕ Nouveau patient</a>
+</div>
+
+{% if success %}
+    <div class="alert alert-success">
+        ✅ {{ success }}
+    </div>
+{% endif %}
+
+{% if error %}
+    <div class="alert alert-danger">
+        ❌ {{ error }}
+    </div>
+{% endif %}
+
+<!-- Statistiques -->
+<div class="stats">
+    <div class="stat-card">
+        <div class="stat-number">{{ stats.total }}</div>
+        <div class="stat-label">Total Patients</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number" style="color: #dc3545;">{{ stats.diabetic }}</div>
+        <div class="stat-label">Diabétiques</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number" style="color: #28a745;">{{ stats.non_diabetic }}</div>
+        <div class="stat-label">Non Diabétiques</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number" style="color: #ffc107;">{{ stats.diabetic_percentage }}%</div>
+        <div class="stat-label">Risque Diabète</div>
+    </div>
+</div>
+
+<!-- Liste des patients -->
+<div class="card">
+    {% if patients %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>👤 Nom</th>
+                    <th>📅 Âge</th>
+                    <th>⚥ Sexe</th>
+                    <th>🩸 Glucose</th>
+                    <th>📊 IMC</th>
+                    <th>🔍 Résultat</th>
+                    <th>📆 Date</th>
+                    <th>⚡ Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for patient in patients %}
+                <tr>
+                    <td><strong>{{ patient.name }}</strong></td>
+                    <td>{{ patient.age }} ans</td>
+                    <td>{{ patient.sex }}</td>
+                    <td>{{ patient.glucose }} mg/dL</td>
+                    <td>{{ "%.1f"|format(patient.bmi) }}</td>
+                    <td>
+                        {% if "Diabétique" in patient.result %}
+                            <span style="color: #dc3545; font-weight: bold;">❌ {{ patient.result }}</span>
+                        {% else %}
+                            <span style="color: #28a745; font-weight: bold;">✅ {{ patient.result }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ patient.created_at.strftime('%d/%m/%Y') }}</td>
+                    <td>
+                        <form method="post" action="/delete/{{ patient.id }}" style="display: inline;" 
+                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce patient ?');">
+                            <button type="submit" class="btn btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">
+                                🗑️ Supprimer
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div style="text-align: center; padding: 3rem;">
+            <h3>😊 Aucun patient pour le moment</h3>
+            <p>Commencez par ajouter votre premier patient !</p>
+            <a href="/add" class="btn" style="margin-top: 1rem;">➕ Ajouter un patient</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

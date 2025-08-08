@@ -1,0 +1,21 @@
+<!-- templates/navbar.html -->
+<nav class="navbar">
+    <div class="nav-content">
+        <div class="logo">
+            🏥 Gestion Médicale
+        </div>
+        
+        <ul class="nav-links">
+            {% if request.session.get('doctor_id') %}
+                <li><a href="/">Accueil</a></li>
+                <li><a href="/patients">Mes Patients</a></li>
+                <li><a href="/add">Ajouter Patient</a></li>
+                <li><a href="/logout">Déconnexion ({{ request.session.get('username') }})</a></li>
+            {% else %}
+                <li><a href="/">Accueil</a></li>
+                <li><a href="/login">Connexion</a></li>
+                <li><a href="/register">Inscription</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>

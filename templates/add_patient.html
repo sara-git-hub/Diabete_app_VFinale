@@ -1,0 +1,79 @@
+<!-- templates/add_patient.html -->
+{% extends "base.html" %}
+
+{% block title %}Ajouter Patient - Gestion Médicale{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>➕ Ajouter un nouveau patient</h1>
+    
+    {% if error %}
+        <div class="alert alert-danger">
+            ❌ {{ error }}
+        </div>
+    {% endif %}
+    
+    <form method="post" action="/submit">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label for="name">Nom complet:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="age">Âge:</label>
+                <input type="number" id="age" name="age" required min="0" max="120">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="sex">Sexe:</label>
+            <select id="sex" name="sex" required>
+                <option value="">Sélectionnez...</option>
+                <option value="M">Masculin</option>
+                <option value="F">Féminin</option>
+            </select>
+        </div>
+        
+        <h3>📊 Données médicales</h3>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label for="glucose">Glucose (mg/dL):</label>
+                <input type="number" id="glucose" name="glucose" step="0.1" required min="0" max="300">
+                <small style="color: #666;">Normal: 70-100 mg/dL</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="bloodpressure">Pression artérielle:</label>
+                <input type="number" id="bloodpressure" name="bloodpressure" step="0.1" required min="40" max="200">
+                <small style="color: #666;">Normal: 120/80 mmHg</small>
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label for="bmi">IMC (Indice de Masse Corporelle):</label>
+                <input type="number" id="bmi" name="bmi" step="0.1" required min="10" max="50">
+                <small style="color: #666;">Normal: 18.5-24.9</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="pedigree">Fonction Pedigree Diabète:</label>
+                <input type="number" id="pedigree" name="pedigree" step="0.001" required min="0" max="2">
+                <small style="color: #666;">Facteur héréditaire</small>
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" class="btn">🔍 Analyser et sauvegarder</button>
+            <a href="/patients" class="btn" style="background-color: #6c757d;">Annuler</a>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <h3>ℹ️ Information</h3>
+    <p>Une fois les données saisies, le système effectuera automatiquement une prédiction du risque de diabète basée sur l'intelligence artificielle.</p>
+</div>
+{% endblock %}
