@@ -53,7 +53,6 @@ Application web dédiée aux médecins, permettant la gestion des dossiers patie
 
 medical_app/
 
-│
 ├── main.py                # Fichier principal de l'application
 
 ├── model.pkl              # Modèle de machine learning
