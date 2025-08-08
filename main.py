@@ -3,21 +3,15 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Depends, Form, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse
-from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, Session, relationship
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, Session
 from passlib.context import CryptContext
-from jose import JWTError, jwt
-from datetime import datetime, timedelta
-from typing import Optional, List
+from typing import Optional
 import pandas as pd
 import joblib
 from starlette.middleware.sessions import SessionMiddleware
 
-from models.schemas import (
-    UserCreate, UserLogin, PatientCreate, PatientResponse,
-    PredictionResponse, PredictionCreate, PredictionData
-)   
+from models.schemas import UserCreate, UserLogin, PatientCreate 
 from models.database import Base, Medecin, Patient, Prediction
 
 # =====================================================
@@ -26,6 +20,7 @@ from models.database import Base, Medecin, Patient, Prediction
 # Charger les variables d'environnement
 load_dotenv()
 
+# Variables d'environnement pour la base de données
 SECRET_KEY = os.getenv("SECRET_KEY")
 user = os.getenv("PGUSER")
 password = os.getenv("PGPASSWORD")
@@ -33,18 +28,19 @@ host = os.getenv("PGHOST")
 port = int(os.getenv("PGPORT"))
 database = os.getenv("PGDATABASE")
 
-
-# Création de l'engine SQLAlchemy
-engine = create_engine(f'postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}')
-
-
+# créer l'application FastAPI
 app = FastAPI(title="API Gestion Médicale Minimale", version="1.0.0")
-app.add_middleware(SessionMiddleware, secret_key="your-secret-key-here")
 
+# Middleware pour les sessions
+app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
+
+# Configuration des templates Jinja2
 templates = Jinja2Templates(directory="templates")
+
+# Configuration de la gestion du hachage des mots de passe avec bcrypt
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# Base de données SQLite pour simplicité
+# Base de données POSTGRESQL
 engine = engine = create_engine(f'postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}')
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -112,7 +108,7 @@ def predict_diabetes(patient_data: PatientCreate) -> tuple[Optional[int], float]
 async def login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
-# Route pour soumettre le formulaire de connexion
+# Route pour soumettre le formulaire de connexion des medecins
 @app.post("/login")
 async def login_submit(
     request: Request,
@@ -143,7 +139,7 @@ async def login_submit(
             "error": f"Erreur: {str(e)}"
         })
 
-# Route pour l'enregistrement d'un nouveau médecin
+# Route pour afficher le formulaire d'enregistrement
 @app.get("/register", response_class=HTMLResponse)
 async def register_page(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
@@ -190,7 +186,7 @@ async def register_submit(
             "error": str(e)
         })
 
-# Route pour déconnexion
+# Route pour la déconnexion
 @app.get("/logout")
 async def logout(request: Request):
     request.session.clear()
@@ -205,11 +201,11 @@ async def logout(request: Request):
 async def root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-# Route pour ajouter un patient
+# Route pour afficher le formulaire d'ajout de patient
 @app.get("/add", response_class=HTMLResponse)
 async def add_patient_form(request: Request):
     if "doctor_id" not in request.session:
-        return RedirectResponse(url="/login")
+        return RedirectResponse(url="/login")  
     return templates.TemplateResponse("add_patient.html", {"request": request})
 
 # Route pour soumettre le formulaire d'ajout de patient
@@ -285,7 +281,7 @@ async def submit_patient(
             status_code=303
         )
 
-# Route pour afficher la liste des patients
+# Route pour afficher la liste des patients et les statistiques
 @app.get("/patients", response_class=HTMLResponse)
 async def patients_dashboard(request: Request, db: Session = Depends(get_db)):
     if "doctor_id" not in request.session:
@@ -322,7 +318,7 @@ async def patients_dashboard(request: Request, db: Session = Depends(get_db)):
             "error": str(e)
         })
 
-# Route pour afficher les détails d'un patient
+# Route pour supprimer un patient
 @app.post("/delete/{patient_id}")
 async def delete_patient(patient_id: int, request: Request, db: Session = Depends(get_db)):
     if "doctor_id" not in request.session:
@@ -345,121 +341,10 @@ async def delete_patient(patient_id: int, request: Request, db: Session = Depend
     except Exception as e:
         return RedirectResponse(url=f"/patients?error={str(e)}", status_code=303)
 
-# =====================================================
-# API ENDPOINTS (avec Pydantic)
-# =====================================================
-
-# API pour créer un patient avec validation Pydantic
-@app.post("/api/patients", response_model=PatientResponse)
-async def create_patient_api(
-    patient: PatientCreate,
-    request: Request,
-    db: Session = Depends(get_db)
-):
-    """Créer un patient via API avec validation Pydantic complète"""
-    if "doctor_id" not in request.session:
-        raise HTTPException(401, "Non authentifié")
-    
-    # Faire la prédiction
-    prediction, confidence = predict_diabetes(patient)
-    
-    # Interpréter le résultat
-    if prediction is not None:
-        result_text = "Diabétique" if prediction == 1 else "Non diabétique"
-    else:
-        result_text = "Erreur de prédiction"
-        prediction = -1
-        confidence = 0
-    
-    # Créer le patient
-    db_patient = Patient(
-        doctorid=request.session["doctor_id"],
-        **patient.dict(),
-        result=result_text
-    )
-    
-    db.add(db_patient)
-    db.commit()
-    db.refresh(db_patient)
-    
-    # Enregistrer la prédiction si elle est valide
-    if prediction != -1:
-        db_prediction = Prediction(
-            patientid=db_patient.id,
-            result=int(prediction),
-            confidence=float(confidence)
-        )
-        db.add(db_prediction)
-        db.commit()
-    
-    return db_patient
-
-# API pour obtenir la liste des patients
-@app.get("/api/patients", response_model=List[PatientResponse])
-async def get_patients_api(request: Request, db: Session = Depends(get_db)):
-    """Obtenir la liste des patients via API"""
-    if "doctor_id" not in request.session:
-        raise HTTPException(401, "Non authentifié")
-    
-    patients = db.query(Patient).filter(
-        Patient.doctorid == request.session["doctor_id"]
-    ).all()
-    
-    return patients
-
-# API pour obtenir les détails d'un patient
-@app.get("/api/predictions/{patient_id}", response_model=List[PredictionData])
-async def get_patient_predictions(
-    patient_id: int,
-    request: Request,
-    db: Session = Depends(get_db)
-):
-    """Obtenir les prédictions d'un patient"""
-    if "doctor_id" not in request.session:
-        raise HTTPException(401, "Non authentifié")
-    
-    # Vérifier que le patient appartient au médecin connecté
-    patient = db.query(Patient).filter(
-        Patient.id == patient_id,
-        Patient.doctorid == request.session["doctor_id"]
-    ).first()
-    
-    if not patient:
-        raise HTTPException(404, "Patient non trouvé")
-    
-    predictions = db.query(Prediction).filter(
-        Prediction.patientid == patient_id
-    ).all()
-    
-    return predictions
-
-# API pour faire une prédiction sans sauvegarder
-@app.post("/api/predict", response_model=PredictionResponse)
-async def predict_api(patient_data: PatientCreate):
-    """Faire une prédiction via API sans sauvegarder"""
-    prediction, confidence = predict_diabetes(patient_data)
-    
-    if prediction is not None:
-        result_text = "Diabétique" if prediction == 1 else "Non diabétique"
-    else:
-        result_text = "Erreur de prédiction"
-        prediction = 0
-        confidence = 0.0
-    
-    return PredictionResponse(
-        prediction=prediction,
-        confidence=confidence,
-        result_text=result_text
-    )
-
-# Health check endpoint
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy", "timestamp": datetime.now()}
 
 # =====================================================
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    uvicorn.run(app, host="0.0.0.0", port=8082)
 
-#python -m uvicorn main:app --reload --port 8080
+#python -m uvicorn main:app --reload --port 8082
